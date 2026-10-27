@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5D Tropical Storm Gallery</title>
+    <style>
+        /* --- GLOBAL & 5D BACKGROUND --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Deep animated gradient background */
+            background: radial-gradient(circle at center, #0a192f 0%, #020c1b 50%, #000000 100%);
+            background-size: 200% 200%;
+            animation: bgShift 20s ease-in-out infinite alternate;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            perspective: 1500px;
+        }
+
+        @keyframes bgShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        /* Moving Background Particles */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            margin-bottom: 10px;
+            text-align: center;
+            background: linear-gradient(to right, #00f2fe, #4facfe, #f093fb, #00f2fe);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShine 5s linear infinite;
+            text-shadow: 0 0 30px rgba(79, 172, 254, 0.2);
+            z-index: 10;
+        }
+
+        @keyframes textShine {
+            to { background-position: 300% center; }
+        }
+
+        .instruction {
+            font-size: 1rem;
+            color: #4facfe;
+            margin-bottom: 50px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 300;
+            animation: pulse 3s infinite;
+            z-index: 10;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 15px #4facfe; }
+        }
+
+        /* --- 5D GALLERY GRID --- */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 50px;
+            max-width: 1400px;
+            width: 100%;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        /* --- 5D GLASSMORPHISM CARDS --- */
+        .card {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out, box-shadow 0.4s ease;
+            will-change: transform;
+        }
+
+        /* Holographic Shine Overlay */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(125deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0) 50%);
+            background-size: 200% 200%;
+            background-position: 100% 100%;
+            transition: background-position 0.6s ease;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .card:hover::after {
+            background-position: 0% 0%;
+        }
+
+        /* The Image */
+        .card img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.8s ease;
+            display: block;
+            pointer-events: none;
+            transform: translateZ(0);
+        }
+
+        .card:hover img {
+            transform: translateZ(30px) scale(1.05);
+            filter: brightness(1.1) contrast(1.15) saturate(1.2);
+        }
+
+        /* The Content Overlay */
+        .card-content {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            padding: 40px 25px 25px;
+            background: linear-gradient(to top, rgba(2, 12, 27, 0.95) 0%, rgba(2, 12, 27, 0.7) 70%, transparent 100%);
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateZ(60px);
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .card:hover .card-content {
+            bottom: 0;
+        }
+
+        .card-content h2 {
+            font-size: 1.6rem;
+            color: #00f2fe;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+
+        .card-content p {
+            font-size: 0.95rem;
+            color: #b0c4de;
+            line-height: 1.6;
+        }
+
+        /* --- STORM & LIGHTNING CSS --- */
+        
+        /* Canvas for localized rain on the card */
+        .storm-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 25; /* Above image, below text */
+            pointer-events: none; /* Let clicks pass to the card */
+            border-radius: 24px;
+        }
+
+        /* Lightning Flash Animation */
+        @keyframes lightningFlash {
+            0%, 93%, 95%, 100% { opacity: 0; }
+            94%, 96% { opacity: 1; background: rgba(255, 255, 255, 0.8); }
+            95% { opacity: 0.5; background: rgba(0, 242, 254, 0.6); }
+        }
+
+        .lightning-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 24;
+            pointer-events: none;
+            opacity: 0;
+            border-radius: 24px;
+            box-shadow: inset 0 0 50px rgba(0, 242, 254, 0.8);
+        }
+
+        .lightning-active {
+            animation: lightningFlash 0.6s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; letter-spacing: 2px; }
+            .gallery-container { gap: 30px; grid-template-columns: 1fr; }
+            .card-content { bottom: 0; background: rgba(0,0,0,0.8); } 
+            .card img { filter: brightness(0.7); }
+        }
+    </style>
+</head>
+<body>
+
+
+
+
+    <!-- Global Background Particles -->
+    <canvas id="bg-canvas"></canvas>
+
+<!-- MENU -->
+
+<nav>
+<center>
+<a href="index.html">HOME</a> |
+<a href="historyofboracay.html">HISTORY OF BORACAY</a> |
+<a href="gallery.html">GALLERY </a> |
+<a href="about.html">ABOUT</a> |
+</center>
+<hr>
+</nav>
+
+<!-- MAIN CONTENT -->
+
+<main>
+
+<center>
+
+    <h1>Gallery of Boracay</h1>
+    <p class="instruction">✦ Click image to summon the thunderstorm ✦</p>
+
+    <div class="gallery-container">
+    
+
+
+
+
+ 
+
+        <!-- Image 1 -->
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=1000&auto=format&fit=crop" alt="Blue Hour Beach">
+            <canvas class="storm-canvas"></canvas>
+            <div class="lightning-overlay"></div>
+            <div class="card-content">
+                <h2>Twilight Horizon</h2>
+                <p>The magical "Blue Hour" descends upon the coast. The sky transforms into a canvas of deep indigo and vibrant cyan, highlighting the iconic Paraw sailboats resting on the calm shores.</p>
+            </div>
+        </div>
+
+        <!-- Image 2 -->
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1610450949065-1f2841536c88?q=80&w=1000&auto=format&fit=crop" alt="Sunset Silhouette">
+            <canvas class="storm-canvas"></canvas>
+            <div class="lightning-overlay"></div>
+            <div class="card-content">
+                <h2>Golden Silhouette</h2>
+                <p>A breathtaking sunset dips below the horizon, casting a warm golden glow over the water. A solitary tree atop a jagged rock formation creates a perfect, tranquil silhouette.</p>
+            </div>
+        </div>
+
+        <!-- Image 3 -->
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?q=80&w=1000&auto=format&fit=crop" alt="Aerial Beach View">
+            <canvas class="storm-canvas"></canvas>
+            <div class="lightning-overlay"></div>
+            <div class="card-content">
+                <h2>Crystal Waters</h2>
+                <p>An aerial perspective of paradise. The stunning gradient of turquoise water meets powder-white sand. Sails dot the ocean while lush green mountains guard the pristine coastline.</p>
+            </div>
+        </div>
+
+        <!-- Image 4 -->
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop" alt="Palm Trees Sunset">
+            <canvas class="storm-canvas"></canvas>
+            <div class="lightning-overlay"></div>
+            <div class="card-content">
+                <h2>Fiery Palms</h2>
+                <p>Framed by sweeping palm fronds, the sky erupts in fiery oranges and reds. The beach is alive with the silhouettes of locals and travelers enjoying the spectacular evening display.</p>
+            </div>
+        </div>
+
+        <!-- Image 5 -->
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1583212292454-1fe6229603b7?q=80&w=1000&auto=format&fit=crop" alt="Willy's Rock">
+            <canvas class="storm-canvas"></canvas>
+            <div class="lightning-overlay"></div>
+            <div class="card-content">
+                <h2>Volcanic Guardian</h2>
+                <p>Under the bright midday sun, a unique volcanic rock formation stands proudly in the shallow waters. Crystal clear waves gently lap against the shore, inviting you into the warmth.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* ==========================================
+           1. 5D PARALLAX MOUSE TILT EFFECT
+           ========================================== */
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const rotateX = ((y / rect.height) - 0.5) * -20; 
+                const rotateY = ((x / rect.width) - 0.5) * 20;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+                card.style.boxShadow = `0 30px 60px rgba(0,0,0,0.8), ${-rotateY}px ${rotateX}px 40px rgba(0, 242, 254, 0.2)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                card.style.boxShadow = `0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2)`;
+            });
+        });
+
+
+        /* ==========================================
+           2. THUNDERSTORM & RAIN CLICK EFFECT
+           ========================================== */
+        const stormCards = document.querySelectorAll('.card');
+
+        stormCards.forEach(card => {
+            const canvas = card.querySelector('.storm-canvas');
+            const ctx = canvas.getContext('2d');
+            const overlay = card.querySelector('.lightning-overlay');
+            
+            let raindrops = [];
+            let isRaining = false;
+            let animationFrameId;
+
+            // Set canvas dimensions to match card image
+            function resizeCanvas() {
+                canvas.width = card.clientWidth;
+                canvas.height = card.clientHeight;
+            }
+            // Initial resize and on window change
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Raindrop Class
+            class Raindrop {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * -canvas.height; // Start above the card
+                    this.length = Math.random() * 20 + 15; // Length of the rain streak
+                    this.speed = Math.random() * 15 + 10; // Fall speed
+                    this.opacity = Math.random() * 0.5 + 0.3;
+                    this.color = Math.random() > 0.8 ? 'rgba(0, 242, 254, ' + this.opacity + ')' : 'rgba(255, 255, 255, ' + this.opacity + ')';
+                }
+                update() {
+                    this.y += this.speed;
+                    // Reset drop to top if it goes off bottom
+                    if (this.y > canvas.height) {
+                        this.y = Math.random() * -100;
+                        this.x = Math.random() * canvas.width;
+                    }
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = 1.5;
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x + 2, this.y + this.length); // Slight angle
+                    ctx.stroke();
+                }
+            }
+
+            // Trigger Storm
+            card.addEventListener('click', () => {
+                // 1. Trigger Lightning Flash
+                overlay.classList.remove('lightning-active');
+                void overlay.offsetWidth; // Trigger reflow to restart animation
+                overlay.classList.add('lightning-active');
+
+                // 2. Initialize Rain if not already raining
+                if (!isRaining) {
+                    isRaining = true;
+                    raindrops = [];
+                    // Create heavy rain (150 drops)
+                    for (let i = 0; i < 150; i++) {
+                        raindrops.push(new Raindrop());
+                    }
+                    animateRain();
+                }
+            });
+
+            // Rain Animation Loop
+            function animateRain() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                let activeDrops = 0;
+                for (let i = 0; i < raindrops.length; i++) {
+                    raindrops[i].update();
+                    raindrops[i].draw();
+                    
+                    // Keep track if any drops are still visible
+                    if (raindrops[i].y < canvas.height + 50) {
+                        activeDrops++;
+                    }
+                }
+
+                // If there are still drops, keep animating
+                if (activeDrops > 0 && isRaining) {
+                    animationFrameId = requestAnimationFrame(animateRain);
+                } else {
+                    // Stop raining, clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    isRaining = false;
+                    cancelAnimationFrame(animationFrameId);
+                }
+            }
+        });
+
+
+        /* ==========================================
+           3. ANIMATED BACKGROUND PARTICLES (Global)
+           ========================================== */
+        const bgCanvas = document.getElementById('bg-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let particlesArray = [];
+
+        function setBgCanvasSize() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+        setBgCanvasSize();
+        window.addEventListener('resize', setBgCanvasSize);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * bgCanvas.width;
+                this.y = Math.random() * bgCanvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.color = Math.random() > 0.5 ? 'rgba(0, 242, 254, 0.3)' : 'rgba(240, 147, 251, 0.2)';
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > bgCanvas.width) this.x = 0;
+                if (this.x < 0) this.x = bgCanvas.width;
+                if (this.y > bgCanvas.height) this.y = 0;
+                if (this.y < 0) this.y = bgCanvas.height;
+            }
+            draw() {
+                bgCtx.fillStyle = this.color;
+                bgCtx.beginPath();
+                bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                bgCtx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            const numberOfParticles = (bgCanvas.width * bgCanvas.height) / 10000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>About Boracay · 5D interactive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+  
+ 
+
+    <!-- MAIN CONTENT -->
+        /* ---------- GLOBAL ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: #030712;
+            overflow-x: hidden;
+            perspective: 1200px;
+        }
+
+        /* ---------- 5D BACKGROUND (fire + depth) ---------- */
+        .bg-5d {
+            position: fixed;
+            inset: 0;
+            z-index: -5;
+            background: radial-gradient(circle at 30% 40%, #1b3b5c, #030712 75%);
+            transition: transform 0.1s ease-out;
+        }
+
+        /* fire particles */
+        .fire-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -4;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .fire-particle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #ffb347, #ff6b00, #cc3300);
+            border-radius: 50%;
+            opacity: 0.7;
+            filter: blur(2px);
+            animation: fireFloat 4s infinite alternate ease-in-out;
+            box-shadow: 0 0 20px #ff6b00, 0 0 40px #ff3300;
+        }
+
+        @keyframes fireFloat {
+            0% { transform: translateY(0) scale(1); opacity: 0.5; }
+            100% { transform: translateY(-50px) scale(1.8); opacity: 0.9; }
+        }
+
+        /* stars / depth particles */
+        .stars, .stars2, .stars3 {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            pointer-events: none;
+            transition: transform 0.1s ease-out;
+        }
+
+        .stars {
+            background-image: 
+                radial-gradient(1.8px 1.8px at 15% 25%, #ffffffcc, transparent),
+                radial-gradient(2.2px 2.2px at 72% 18%, #ffffffaa, transparent),
+                radial-gradient(1.5px 1.5px at 40% 80%, #ffffffdd, transparent),
+                radial-gradient(2.2px 2.2px at 88% 65%, #ffffffbb, transparent),
+                radial-gradient(1.6px 1.6px at 5% 90%, #ffffffcc, transparent),
+                radial-gradient(2.4px 2.4px at 55% 45%, #ffffffaa, transparent),
+                radial-gradient(1.7px 1.7px at 95% 12%, #ffffffdd, transparent),
+                radial-gradient(2px 2px at 28% 70%, #ffffffcc, transparent);
+            background-size: 200px 200px;
+            background-repeat: repeat;
+            animation: twinkle 6s infinite alternate ease-in-out;
+        }
+
+        .stars2 {
+            background-image: 
+                radial-gradient(2.2px 2.2px at 10% 60%, #b3e0ffcc, transparent),
+                radial-gradient(2.8px 2.8px at 80% 30%, #b3e0ffaa, transparent),
+                radial-gradient(1.8px 1.8px at 50% 10%, #b3e0ffdd, transparent),
+                radial-gradient(2.5px 2.5px at 65% 88%, #b3e0ffbb, transparent),
+                radial-gradient(2px 2px at 32% 42%, #b3e0ffcc, transparent);
+            background-size: 300px 300px;
+            animation: twinkle 9s infinite alternate-reverse;
+            opacity: 0.8;
+        }
+
+        .stars3 {
+            background-image: 
+                radial-gradient(3px 3px at 12% 12%, #ffe6b3cc, transparent),
+                radial-gradient(3.2px 3.2px at 92% 78%, #ffe6b3aa, transparent),
+                radial-gradient(2.8px 2.8px at 45% 35%, #ffe6b3dd, transparent),
+                radial-gradient(3px 3px at 78% 62%, #ffe6b3bb, transparent);
+            background-size: 450px 450px;
+            animation: twinkle 12s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.4; transform: scale(0.97); }
+            100% { opacity: 1; transform: scale(1.03); }
+        }
+
+        /* soft glow orbs */
+        .glow-orb {
+            position: fixed;
+            width: 55vw;
+            height: 55vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 100, 0, 0.18) 0%, transparent 70%);
+            top: -10vh;
+            right: -5vw;
+            z-index: -2;
+            filter: blur(60px);
+            animation: floatOrb 18s infinite alternate ease-in-out;
+            transition: transform 0.1s ease-out;
+        }
+
+        .glow-orb2 {
+            position: fixed;
+            width: 70vw;
+            height: 70vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 150, 255, 0.15) 0%, transparent 70%);
+            bottom: -20vh;
+            left: -10vw;
+            z-index: -2;
+            filter: blur(70px);
+            animation: floatOrb 25s infinite alternate-reverse;
+            transition: transform 0.1s ease-out;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 8%) scale(1.15); }
+        }
+ <!-- 
+
+        /* ---------- MAIN CARD ---------- */
+        .about-card {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(12, 25, 45, 0.6);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            border-radius: 48px;
+            padding: 2.5rem 2.8rem;
+            box-shadow: 
+                0 30px 60px -10px rgba(0, 0, 0, 0.85),
+                0 0 0 1px rgba(255, 200, 100, 0.1) inset,
+                0 0 60px rgba(255, 100, 0, 0.15);
+            border: 1px solid rgba(255, 200, 100, 0.15);
+            transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 10;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .about-card:hover {
+            box-shadow: 
+                0 40px 80px -10px #000,
+                0 0 0 1px rgba(255, 200, 100, 0.25) inset,
+                0 0 80px rgba(255, 100, 0, 0.25);
+        }
+
+        /* ---------- TYPOGRAPHY ---------- */
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #fff;
+            text-shadow: 0 4px 30px rgba(255, 140, 0, 0.5), 0 0 20px rgba(255, 200, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 0.2rem;
+            transition: transform 0.1s ease-out;
+        }
+
+        h1 i {
+            font-size: 3rem;
+            color: #ffaa33;
+            text-shadow: 0 0 30px #ff6b00, 0 0 60px #ff3300;
+            animation: flicker 2s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.9; text-shadow: 0 0 20px #ffaa33, 0 0 40px #ff6b00; }
+            100% { opacity: 1; text-shadow: 0 0 40px #ffaa33, 0 0 80px #ff3300; }
+        }
+
+        .subhead {
+            font-size: 1.15rem;
+            color: #ffd9b0;
+            margin-bottom: 2.5rem;
+            border-left: 4px solid #ffaa33;
+            padding-left: 20px;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            transition: transform 0.1s ease-out;
+        }
+
+        /* ---------- IMAGE GALLERY (3D + touch/mouse interaction) ---------- */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 18px;
+            margin-bottom: 2.8rem;
+            perspective: 800px;
+        }
+
+        .gallery-item {
+            border-radius: 24px;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+            box-shadow: 0 15px 25px -8px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 200, 100, 0.15) inset;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+            background: #0e1a28;
+            position: relative;
+            transform-style: preserve-3d;
+            will-change: transform, box-shadow;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            box-shadow: 0 30px 40px -12px #000, 0 0 0 3px #ffaa3388 inset, 0 0 30px #ff6b0055;
+            z-index: 5;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+            pointer-events: none;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.12);
+        }
+
+        /* caption overlay */
+        .gallery-item::after {
+            content: attr(data-caption);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 20, 40, 0.95));
+            color: #ffe6c0;
+            font-size: 0.82rem;
+            padding: 24px 12px 12px;
+            text-align: center;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            text-shadow: 0 1px 5px black;
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        /* fire glow effect when touching gallery item */
+        .gallery-item.touching {
+            box-shadow: 0 0 40px #ff6b00, 0 0 80px #ff3300, 0 0 0 3px #ffaa33 inset !important;
+            filter: brightness(1.2) saturate(1.3);
+            transition: box-shadow 0.15s ease, filter 0.15s ease;
+        }
+
+        /* ---------- INFO GRID ---------- */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 22px;
+            margin-bottom: 2.2rem;
+            perspective: 1000px;
+        }
+
+        .info-card {
+            background: rgba(10, 22, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 1.5rem 1.5rem 1.5rem 1.8rem;
+            border: 1px solid rgba(255, 200, 100, 0.12);
+            box-shadow: 0 10px 20px -8px #00000090, 0 0 0 1px rgba(255, 180, 80, 0.08) inset;
+            transition: all 0.25s ease, transform 0.1s ease-out;
+            color: #e2eafc;
+            will-change: transform;
+        }
+
+        .info-card:hover {
+            background: rgba(18, 38, 65, 0.85);
+            border-color: #ffaa3366;
+            box-shadow: 0 15px 30px -10px #000, 0 0 25px #ff6b0033;
+        }
+
+        .info-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffc285;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px dashed #ffaa3366;
+            padding-bottom: 0.6rem;
+            text-shadow: 0 2px 8px #00000090;
+        }
+
+        .info-card h3 i {
+            color: #ffaa33;
+            font-size: 1.5rem;
+            width: 1.8rem;
+            text-align: center;
+            filter: drop-shadow(0 0 8px #ff6b00);
+        }
+
+        .info-card ul, .info-card p {
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #d4e0f0;
+            padding-left: 0.2rem;
+        }
+
+        .info-card ul {
+            list-style: none;
+        }
+
+        .info-card li {
+            margin-bottom: 0.7rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .info-card li i {
+            color: #ffaa33;
+            font-size: 0.9rem;
+            margin-top: 4px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 5px #ff6b00);
+        }
+
+        .highlight {
+            color: #fff;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ffaa33, #ffd966);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 10px #ff6b00);
+        }
+
+        /* ---------- ETYMOLOGY FOOTNOTE ---------- */
+        .etymology-footnote {
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 24px;
+            padding: 1.4rem 1.8rem;
+            border-left: 6px solid #ffaa33;
+            color: #e0ecff;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 18px -6px black, 0 0 30px #ff6b0022 inset;
+            margin-top: 0.5rem;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        .etymology-footnote i {
+            color: #ffaa33;
+            margin-right: 10px;
+            filter: drop-shadow(0 0 8px #ff6b00);
+        }
+
+        .etymology-footnote strong {
+            color: #ffd966;
+        }
+
+        /* ---------- NAVIGATION MENU ---------- */
+        nav {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto 1.5rem auto;
+            background: rgba(0, 15, 30, 0.8);
+            backdrop-filter: blur(15px);
+            border-radius: 60px;
+            padding: 0.9rem 1.8rem;
+            border: 1px solid rgba(255, 180, 80, 0.25);
+            box-shadow: 0 10px 30px -8px black, 0 0 30px #ff6b0022 inset;
+            z-index: 20;
+            position: relative;
+        }
+
+        nav center {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        nav a {
+            color: #ffd9b0;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.6rem 1.1rem;
+            border-radius: 40px;
+            transition: all 0.25s ease;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            text-shadow: 0 2px 5px black;
+            border: 1px solid transparent;
+        }
+
+        nav a:hover {
+            background: rgba(255, 170, 51, 0.18);
+            border-color: #ffaa3366;
+            color: #fff;
+            box-shadow: 0 0 20px #ff6b0055;
+        }
+
+        nav hr {
+            display: none; /* replaced by flex layout */
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 700px) {
+            .about-card {
+                padding: 1.8rem 1.5rem;
+                border-radius: 32px;
+            }
+            h1 {
+                font-size: 2.4rem;
+            }
+            h1 i {
+                font-size: 2rem;
+            }
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .subhead {
+                font-size: 1rem;
+            }
+            nav a {
+                font-size: 0.85rem;
+                padding: 0.45rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2rem;
+                flex-wrap: wrap;
+            }
+            nav center {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+        }
+
+        /* reduce motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+ 
+    <!-- 5D BACKGROUND LAYERS (fire + stars + orbs) -->
+    <div class="bg-5d" id="bg5d"></div>
+    <div class="fire-layer" id="fireLayer"></div>
+    <div class="stars" id="starsLayer1"></div>
+    <div class="stars2" id="starsLayer2"></div>
+    <div class="stars3" id="starsLayer3"></div>
+    <div class="glow-orb" id="glowOrb1"></div>
+    <div class="glow-orb2" id="glowOrb2"></div>
+
+   
+    <div class="about-card" id="aboutCard">
+        <h1>
+            <i class="fas fa-umbrella-beach"></i> 
+            Boracay
+        </h1>
+        <div class="subhead" id="subhead">
+            <i class="fas fa-map-pin" style="margin-right: 10px; color: #ffaa33;"></i>
+            Western Visayas, Philippines · 10.32 km² · 37,802 (2020)
+        </div>
+<!-- MENU -->
+
+<nav>
+<center>
+<a href="index.html">HOME</a> |
+<a href="historyofboracay.html">HISTORY OF BORACAY</a> |
+<a href="gallery.html">GALLERY </a> |
+<a href="about.html">ABOUT</a> |
+</center>
+<hr>
+</nav>
+
+<!-- MAIN CONTENT -->
+
+<main>
+
+<center>
+
+        <!-- PICTURES / GALLERY -->
+        <div class="gallery" id="gallery">
+            <div class="gallery-item" data-caption="White Beach · powdery sand">
+                <img src="https://picsum.photos/id/1043/400/400" alt="Boracay white beach">
+            </div>
+            <div class="gallery-item" data-caption="Sunset at Boracay">
+                <img src="https://picsum.photos/id/1015/400/400" alt="Boracay sunset">
+            </div>
+            <div class="gallery-item" data-caption="Crystal clear waters">
+                <img src="https://picsum.photos/id/1002/400/400" alt="Boracay ocean">
+            </div>
+            <div class="gallery-item" data-caption="Puka Shell Beach">
+                <img src="https://picsum.photos/id/1069/400/400" alt="Puka beach">
+            </div>
+            <div class="gallery-item" data-caption="Ati-atihan festival">
+                <img src="https://picsum.photos/id/1067/400/400" alt="Ati-atihan festival">
+            </div>
+        </div>
+
+        <!-- INFO GRID -->
+        <div class="info-grid">
+            <div class="info-card">
+                <h3><i class="fas fa-globe-asia"></i> Geography & Demographics</h3>
+                <ul>
+                    <li><i class="fas fa-location-dot"></i> <span>0.8 km off northwest <strong>Panay Island</strong></span></li>
+                    <li><i class="fas fa-ruler-combined"></i> <span>10.32 sq km (3.98 sq mi)</span></li>
+                    <li><i class="fas fa-building"></i> <span>3 barangays in <strong>Malay, Aklan</strong></span></li>
+                    <li><i class="fas fa-users"></i> <span>Population: <span class="highlight">37,802</span> (2020)</span></li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-tree"></i> History & People</h3>
+                <ul>
+                    <li><i class="fas fa-people-group"></i> <span>Originally inhabited by <strong>Panay Bukidnon</strong> and <strong>Ati</strong> people</span></li>
+                    <li><i class="fas fa-chart-line"></i> <span>Commercial development → severe marginalization since the <strong>1970s</strong></span></li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-award"></i> Tourism & Recognition</h3>
+                <ul>
+                    <li><i class="fas fa-umbrella-beach"></i> <span>White sand beaches, relaxation & nightlife</span></li>
+                    <li><i class="fas fa-trophy"></i> <span><strong>Travel + Leisure</strong> — Best Island in the World (2012)</span></li>
+                    <li><i class="fas fa-star"></i> <span><strong>Condé Nast Traveler</strong> — Best Islands in the World (2014)</span></li>
+                    <li><i class="fas fa-binoculars"></i> <span>Top 10 destinations to watch (2016)</span></li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-hard-hat"></i> 2018 Closure & Reopening</h3>
+                <ul>
+                    <li><i class="fas fa-calendar-xmark"></i> <span>April 2018: <strong>6‑month closure</strong> (sewage renovation)</span></li>
+                    <li><i class="fas fa-people-arrows"></i> <span>Managed by <strong>Boracay Inter‑agency Task Force</strong></span></li>
+                    <li><i class="fas fa-calendar-check"></i> <span>Reopened <strong>October 2018</strong> with new rules</span></li>
+                    <li><i class="fas fa-water"></i> <span>30‑metre buffer zone · beachfront cleared</span></li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-drum"></i> Boracay Ati-atihan</h3>
+                <ul>
+                    <li><i class="fas fa-calendar"></i> <span><strong>January 2024</strong> — record <span class="highlight">36,741</span> participants</span></li>
+                    <li><i class="fas fa-hand-peace"></i> <span>Celebrates <strong>Ati indigenous</strong> heritage</span></li>
+                    <li><i class="fas fa-arrow-up"></i> <span>Set to become a major tourism attraction starting 2025</span></li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-book-open"></i> Etymology</h3>
+                <ul>
+                    <li><i class="fas fa-language"></i> <span>Inati: <strong>bora</strong> (bubbles) + <strong>bocay</strong> (white)</span></li>
+                    <li><i class="fas fa-cotton"></i> <span>Local <strong>borac</strong> = white cotton</span></li>
+                    <li><i class="fas fa-shell"></i> <span>Spanish era: <strong>sagay</strong> (shell) + <strong>boray</strong> (seed)</span></li>
+                    <li><i class="fas fa-ban"></i> <span><strong>"Bora"</strong> discouraged — ordinance (2011)</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="etymology-footnote" id="footnote">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Note on the name "Bora"</strong> — Local stakeholders and the municipal government of Malay discourage the shortened "Bora" (derogatory, and to distinguish from Bora Bora). A <strong>February 2011 ordinance</strong> mandates the licensing office to refuse business licenses using "Bora" instead of "Boracay", and it is prohibited in promotional materials.
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- CREATE FIRE PARTICLES DYNAMICALLY ----------
+            const fireLayer = document.getElementById('fireLayer');
+            const PARTICLE_COUNT = 35;
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'fire-particle';
+                const size = Math.random() * 18 + 6;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 2.5) + 's';
+                particle.style.opacity = Math.random() * 0.5 + 0.3;
+                particle.style.background = `radial-gradient(circle, #ffb347, #ff6b00, #cc3300)`;
+                particle.style.boxShadow = `0 0 ${size * 2}px #ff6b00, 0 0 ${size * 3}px #ff3300`;
+                fireLayer.appendChild(particle);
+            }
+
+            // ---------- MOUSE / TOUCH INTERACTION (5D depth) ----------
+            const card = document.getElementById('aboutCard');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const bg5d = document.getElementById('bg5d');
+            const stars1 = document.getElementById('starsLayer1');
+            const stars2 = document.getElementById('starsLayer2');
+            const stars3 = document.getElementById('starsLayer3');
+            const orb1 = document.getElementById('glowOrb1');
+            const orb2 = document.getElementById('glowOrb2');
+            const subhead = document.getElementById('subhead');
+            const footnote = document.getElementById('footnote');
+
+            // Track touch/mouse
+            let isTouching = false;
+
+            // ----- helper: apply transforms based on pointer position -----
+            function applyInteraction(clientX, clientY) {
+                const rect = card.getBoundingClientRect();
+                const cardCenterX = rect.left + rect.width / 2;
+                const cardCenterY = rect.top + rect.height / 2;
+
+                // normalized -1 .. 1
+                const dx = (clientX - cardCenterX) / (rect.width / 2);
+                const dy = (clientY - cardCenterY) / (rect.height / 2);
+
+                // --- card 3D tilt (subtle) ---
+                const rotateY = dx * 8;   // degrees
+                const rotateX = -dy * 8;
+                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.01)`;
+
+                // --- background layers move opposite for depth ---
+                bg5d.style.transform = `translate(${dx * -15}px, ${dy * -15}px) scale(1.02)`;
+                stars1.style.transform = `translate(${dx * -25}px, ${dy * -25}px)`;
+                stars2.style.transform = `translate(${dx * -40}px, ${dy * -40}px)`;
+                stars3.style.transform = `translate(${dx * -60}px, ${dy * -60}px)`;
+                orb1.style.transform = `translate(${dx * 30}px, ${dy * 30}px) scale(1.05)`;
+                orb2.style.transform = `translate(${dx * 45}px, ${dy * 45}px) scale(1.05)`;
+
+                // --- subhead and footnote move slightly (parallax) ---
+                subhead.style.transform = `translate(${dx * -6}px, ${dy * -6}px)`;
+                footnote.style.transform = `translate(${dx * 5}px, ${dy * 5}px)`;
+
+                // --- gallery items: individual 3D tilt + fire glow (if touching) ---
+                galleryItems.forEach((item) => {
+                    const itemRect = item.getBoundingClientRect();
+                    const itemCenterX = itemRect.left + itemRect.width / 2;
+                    const itemCenterY = itemRect.top + itemRect.height / 2;
+
+                    const itemDx = (clientX - itemCenterX) / (itemRect.width / 2);
+                    const itemDy = (clientY - itemCenterY) / (itemRect.height / 2);
+
+                    // clamp -1..1
+                    const clampedX = Math.max(-1, Math.min(1, itemDx));
+                    const clampedY = Math.max(-1, Math.min(1, itemDy));
+
+                    const rotateYItem = clampedX * 12;
+                    const rotateXItem = -clampedY * 12;
+                    const translateZ = isTouching ? 20 : (Math.abs(clampedX) + Math.abs(clampedY)) * 10;
+
+                    item.style.transform = `rotateX(${rotateXItem}deg) rotateY(${rotateYItem}deg) translateZ(${translateZ}px)`;
+
+                    // if touching, add fire glow class
+                    if (isTouching) {
+                        item.classList.add('touching');
+                    } else {
+                        item.classList.remove('touching');
+                    }
+                });
+
+                // info cards also get a tiny tilt (optional)
+                document.querySelectorAll('.info-card').forEach((info) => {
+                    const infoRect = info.getBoundingClientRect();
+                    const infoCenterX = infoRect.left + infoRect.width / 2;
+                    const infoCenterY = infoRect.top + infoRect.height / 2;
+                    const infoDx = (clientX - infoCenterX) / (infoRect.width / 2);
+                    const infoDy = (clientY - infoCenterY) / (infoRect.height / 2);
+                    const clampedX = Math.max(-1, Math.min(1, infoDx));
+                    const clampedY = Math.max(-1, Math.min(1, infoDy));
+                    info.style.transform = `rotateX(${-clampedY * 3}deg) rotateY(${clampedX * 3}deg)`;
+                });
+            }
+
+            // ----- reset transforms when leaving -----
+            function resetInteraction() {
+                card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+                bg5d.style.transform = 'translate(0, 0) scale(1)';
+                stars1.style.transform = 'translate(0, 0)';
+                stars2.style.transform = 'translate(0, 0)';
+                stars3.style.transform = 'translate(0, 0)';
+                orb1.style.transform = 'translate(0, 0) scale(1)';
+                orb2.style.transform = 'translate(0, 0) scale(1)';
+                subhead.style.transform = 'translate(0, 0)';
+                footnote.style.transform = 'translate(0, 0)';
+
+                galleryItems.forEach(item => {
+                    item.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0)';
+                    item.classList.remove('touching');
+                });
+
+                document.querySelectorAll('.info-card').forEach(info => {
+                    info.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                });
+            }
+
+            // ----- MOUSE EVENTS -----
+            card.addEventListener('mousemove', (e) => {
+                isTouching = false; // mouse move doesn't set touching (only touch/drag)
+                applyInteraction(e.clientX, e.clientY);
+            });
+
+            card.addEventListener('mouseleave', () => {
+                resetInteraction();
+            });
+
+            // ----- TOUCH EVENTS (fire glow + 3D) -----
+            card.addEventListener('touchstart', (e) => {
+                isTouching = true;
+                const touch = e.touches[0];
+                applyInteraction(touch.clientX, touch.clientY);
+            }, { passive: true });
+
+            card.addEventListener('

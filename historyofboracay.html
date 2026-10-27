@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boracay · HCI Gallery</title>
+    <style>
+        /* ----- RESET & GLOBAL ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f8fafc;
+            color: #0b2b3c;
+            line-height: 1.6;
+        }
+
+        /* ----- HERO SECTION (main image + overlay) ----- */
+        .hero {
+            position: relative;
+            width: 100%;
+            min-height: 85vh;
+            background-image: url('https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=2000&auto=format&fit=crop');
+            /* fallback: beautiful Boracay-like beach */
+            background-size: cover;
+            background-position: center 30%;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 2rem 1.5rem 3.5rem;
+            isolation: isolate;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 20, 30, 0.75) 0%, rgba(0, 0, 0, 0.15) 55%, rgba(0, 0, 0, 0.05) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            width: 100%;
+            color: white;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 1.5rem;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(2.8rem, 10vw, 5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+        }
+
+        .hero-text .subhead {
+            font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+            font-weight: 300;
+            opacity: 0.92;
+            margin-top: 0.25rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            max-width: 650px;
+        }
+
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0.7rem 1.8rem;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            white-space: nowrap;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ----- MAIN CONTAINER ----- */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 3.5rem 1.5rem;
+        }
+
+        /* ----- SECTION TITLES ----- */
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: #0b3b4c;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title span {
+            display: inline-block;
+            width: 6px;
+            height: 32px;
+            background: #1e8f8f;
+            border-radius: 8px;
+        }
+
+        .section-sub {
+            font-size: 1.1rem;
+            color: #2e5f6b;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            font-weight: 350;
+        }
+
+        /* ----- GALLERY GRID ----- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .gallery-item {
+            border-radius: 28px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 12px 30px -8px rgba(0, 30, 40, 0.15);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            aspect-ratio: 4 / 3;
+            position: relative;
+            cursor: default;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 40px -10px rgba(0, 40, 50, 0.25);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.03);
+        }
+
+        /* caption overlay for gallery items */
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+            color: white;
+            padding: 2.2rem 1.2rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        /* ----- HISTORY / TIMELINE SECTION ----- */
+        .history-section {
+            background: linear-gradient(145deg, #e7f5f4 0%, #d2e9e8 100%);
+            border-radius: 48px;
+            padding: 3.5rem 2.5rem;
+            margin-top: 2rem;
+            box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.8), 0 12px 30px -10px rgba(0, 60, 70, 0.2);
+        }
+
+        .history-section .section-title {
+            color: #0a3e48;
+        }
+
+        .history-section .section-title span {
+            background: #0f7b7b;
+        }
+
+        .history-section .section-sub {
+            color: #1f5e68;
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 1.6rem 2rem;
+            border-radius: 24px;
+            border-left: 8px solid #1a8f8f;
+            box-shadow: 0 6px 18px rgba(0, 50, 60, 0.08);
+            transition: background 0.2s;
+        }
+
+        .timeline-item:hover {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .timeline-icon {
+            font-size: 2.2rem;
+            line-height: 1;
+            flex-shrink: 0;
+            margin-top: 0.2rem;
+        }
+
+        .timeline-content h3 {
+            font-size: 1.3rem;
+            font-weight: 650;
+            color: #063b44;
+            margin-bottom: 0.4rem;
+        }
+
+        .timeline-content p {
+            color: #1d4e58;
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .timeline-content .highlight {
+            font-weight: 600;
+            color: #0a6b6b;
+        }
+
+        .timeline-content .etymology {
+            background: #1e8f8f10;
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0f5e5e;
+            border: 1px solid #8fc9c9;
+            margin-top: 0.3rem;
+        }
+
+        /* ----- FOOTER ----- */
+        .footer {
+            margin-top: 3rem;
+            padding: 2rem 0 1rem;
+            text-align: center;
+            color: #5e8b94;
+            font-size: 0.9rem;
+            border-top: 1px solid #cfe3e5;
+        }
+
+        /* ----- RESPONSIVE TWEAKS ----- */
+        @media (max-width: 700px) {
+            .hero {
+                min-height: 70vh;
+                align-items: center;
+                padding: 2rem 1.2rem;
+            }
+
+            .hero-content {
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: center;
+                gap: 1.2rem;
+            }
+
+            .hero-badge {
+                align-self: flex-start;
+                font-size: 0.8rem;
+                padding: 0.5rem 1.2rem;
+            }
+
+            .container {
+                padding: 2.5rem 1.2rem;
+            }
+
+            .history-section {
+                padding: 2.5rem 1.5rem;
+                border-radius: 32px;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                gap: 0.6rem;
+                padding: 1.4rem 1.2rem;
+            }
+
+            .timeline-icon {
+                font-size: 1.9rem;
+            }
+
+            .section-title {
+                font-size: 1.7rem;
+            }
+
+            .section-title span {
+                height: 26px;
+                width: 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-text .subhead {
+                font-size: 1rem;
+            }
+
+            .timeline-content h3 {
+                font-size: 1.15rem;
+            }
+        }
+
+        /* Accessibility focus */
+        .gallery-item:focus-visible,
+        .timeline-item:focus-visible {
+            outline: 3px solid #1e8f8f;
+            outline-offset: 3px;
+        }
+	
+    </style>
+</head>
+<body>
+    <!-- MENU -->
+
+<nav>
+<center>
+<a href="index.html">HOME</a> |
+<a href="historyofboracay.html">HISTORY OF BORACAY</a> |
+<a href="gallery.html">GALLERY </a> |
+<a href="about.html">ABOUT</a> |
+</center>
+<hr>
+</nav>
+
+    <!-- HERO / MAIN VISUAL -->
+    <header class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Boracay</h1>
+                <div class="subhead">White sand, turquoise water, and a story older than tourism.</div>
+            </div>
+            <div class="hero-badge">Welcome to the Boracay Island</div>
+        </div>
+    </header>
+
+    <!-- GALLERY + HISTORY -->
+    <main class="container">
+
+        <!-- VISUAL GALLERY -->
+        <section aria-labelledby="gallery-heading">
+            <h2 id="gallery-heading" class="section-title"><span></span>Island impressions</h2>
+            <p class="section-sub">Aerial views, shoreline, and the rhythm of Boracay — from the Ati people to the present.</p>
+
+            <div class="gallery-grid">
+                <!-- image 1: aerial beach + boats (the provided view) -->
+                <figure class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=1200&auto=format&fit=crop" 
+                         alt="Aerial view of Boracay's white beach, turquoise water, boats, and lush green hills.">
+                    <figcaption class="gallery-caption">
+                        <span>White Beach & outriggers</span>
+                        <span>🌴</span>
+                    </figcaption>
+                </figure>
+
+                <!-- image 2: puka shell beach / quiet cove -->
+                <figure class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1583212292454-1fe6229603b7?q=80&w=1200&auto=format&fit=crop" 
+                         alt="Tranquil cove with clear shallow water and tropical greenery in Boracay.">
+                    <figcaption class="gallery-caption">
+                        <span>Hidden coves</span>
+                        <span>🐚</span>
+                    </figcaption>
+                </figure>
+
+                <!-- image 3: palm trees and sandy path -->
+                <figure class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1200&auto=format&fit=crop" 
+                         alt="Palm trees leaning over a sandy path near the beach in Boracay.">
+                    <figcaption class="gallery-caption">
+                        <span>Palm-lined paths</span>
+                        <span>🌴</span>
+                    </figcaption>
+                </figure>
+
+                <!-- image 4: sunset sailing / traditional paraw -->
+                <figure class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop" 
+                         alt="Traditional paraw sailboat on calm water during golden hour.">
+                    <figcaption class="gallery-caption">
+                        <span>Paraw at golden hour</span>
+                        <span>⛵</span>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!-- HISTORY / TIMELINE (Ati, Spanish, administrative) -->
+        <section class="history-section" aria-labelledby="history-heading">
+            <h2 id="history-heading" class="section-title"><span></span>Deep roots & shifting tides</h2>
+            <p class="section-sub">Before the resorts and the worldwide fame, Boracay was home to the Ati people — and its name carries their legacy.</p>
+
+            <div class="timeline">
+
+                <!-- Indigenous roots & etymology -->
+                <article class="timeline-item">
+                    <div class="timeline-icon" aria-hidden="true">🪶</div>
+                    <div class="timeline-content">
+                        <h3>Indigenous Ati & the name Boracay</h3>
+                        <p>The island was originally populated by the <strong>Ati people</strong>. According to their oral tradition, the name <em>Boracay</em> comes from the Inati words 
+                            <span class="highlight">"bora"</span> (bubbles) and <span class="highlight">"bocay"</span> (white).</p>
+                        <span class="etymology">bora + bocay = white bubbles</span>
+                    </div>
+                </article>
+
+                <!-- Spanish era -->
+                <article class="timeline-item">
+                    <div class="timeline-icon" aria-hidden="true">⛵</div>
+                    <div class="timeline-content">
+                        <h3>Spanish colonial period</h3>
+                        <p>Spanish colonizers recorded the island as <strong>Buracay</strong>. Early Spanish contact noted a small population of around <strong>100 people</strong> who cultivated rice and raised goats.</p>
+                    </div>
+                </article>
+
+                <!-- Administrative shifts -->
+                <article class="timeline-item">
+                    <div class="timeline-icon" aria-hidden="true">🗺️</div>
+                    <div class="timeline-content">
+                        <h3>Administrative shifts</h3>
+                        <p>Boracay was historically part of the province of <strong>Capiz</strong> under the jurisdiction of <strong>Buruanga</strong>. It later became part of the municipality of <strong>Malay</strong> when it was established in 1949, and subsequently joined the independent province of <strong>Aklan</strong> in 1956.</p>
+                    </div>
+                </article>
+
+                <!-- Transformation (implied) -->
+                <article class="timeline-item">
+                    <div class="timeline-icon" aria-hidden="true">🏝️</div>
+                    <div class="timeline-content">
+                        <h3>From farming & fishing to world stage</h3>
+                        <p>What was once a quiet farming and fishing community inhabited by the Ati people transformed into a <strong>world-famous beach destination</strong>. Today, Boracay balances its ancient heritage with global tourism.</p>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- subtle footer note -->
+        <footer class="footer">
+            <p>Boracay Island · Boracay · Image & history for educational inspiration</p>
+        </footer>
+
+    </main>
+
+</body>
+</html
